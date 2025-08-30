@@ -67,7 +67,7 @@ export const seedSeventhSemData = api<void, { message: string }>(
     ];
 
     for (const student of students) {
-      const placementEligible = student.aggregate >= 70 && student.backlogs === 0;
+      const placementEligible = student.aggregate >= 50 && student.backlogs === 0;
       
       // Determine placement status
       let placementStatus = 'Not Placed';
