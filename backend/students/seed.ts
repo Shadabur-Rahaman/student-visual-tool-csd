@@ -174,7 +174,7 @@ export const seedFifthSemData = api<void, { message: string }>(
     for (const student of students) {
       // Calculate aggregate for 5th sem students (only 4 semesters available)
       const aggregate = (student.sem1 + student.sem2 + student.sem3 + student.sem4) / 4;
-      const placementEligible = aggregate >= 70 && student.backlogs === 0;
+      const placementEligible = aggregate >= 50 && student.backlogs === 0;
       
       await studentDB.exec`
         INSERT INTO students (
