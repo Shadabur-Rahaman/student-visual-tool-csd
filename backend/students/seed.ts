@@ -173,12 +173,8 @@ export const seedFifthSemData = api<void, { message: string }>(
 
     for (const student of students) {
       // Calculate aggregate for 5th sem students (only 4 semesters available)
-      // Only include semesters with non-zero percentages in the calculation
-      const semesters = [student.sem1, student.sem2, student.sem3, student.sem4].filter(sem => sem > 0);
-      const aggregate = semesters.length > 0 ? semesters.reduce((a, b) => a + b, 0) / semesters.length : 0;
+      const aggregate = (student.sem1 + student.sem2 + student.sem3 + student.sem4) / 4;
       const placementEligible = aggregate >= 50 && student.backlogs === 0;
-      
-      console.log(`Processing ${student.name}: aggregate=${aggregate}, backlogs=${student.backlogs}, eligible=${placementEligible}`);
       
       await studentDB.exec`
         INSERT INTO students (
