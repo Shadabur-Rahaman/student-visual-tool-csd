@@ -172,10 +172,16 @@ export const seedFifthSemData = api<void, { message: string }>(
     ];
 
     for (const student of students) {
-      // Calculate aggregate for 5th sem students (only 4 semesters available)
-      const aggregate = (student.sem1 + student.sem2 + student.sem3 + student.sem4) / 4;
+      // Compute aggregate (average of 4 sems)
+      const aggregate =
+        (student.sem1 + student.sem2 + student.sem3 + student.sem4) / 4;
+
+      // Eligible if aggregate ≥ 50 and no backlogs
       const placementEligible = aggregate >= 50 && student.backlogs === 0;
-      
+
+      // Default placement status
+      let placementStatus = "Not Placed";
+
       await studentDB.exec`
         INSERT INTO students (
           name, usn, batch, tenth_percentage, puc_percentage,
@@ -184,7 +190,7 @@ export const seedFifthSemData = api<void, { message: string }>(
         ) VALUES (
           ${student.name}, ${student.usn}, '5th-sem', ${student.tenth}, ${student.puc},
           ${student.sem1}, ${student.sem2}, ${student.sem3}, ${student.sem4},
-          ${aggregate}, ${student.backlogs}, ${placementEligible}, 'Not Placed'
+          ${aggregate}, ${student.backlogs}, ${placementEligible}, ${placementStatus}
         )
         ON CONFLICT (usn) DO UPDATE SET
           name = EXCLUDED.name,
