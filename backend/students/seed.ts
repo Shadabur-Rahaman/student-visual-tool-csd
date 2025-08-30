@@ -171,43 +171,70 @@ export const seedFifthSemData = api<void, { message: string }>(
       { name: "Rohit P Gokavi", usn: "4PM23CG038", tenth: 80.1, puc: 86, sem1: 78, sem2: 79, sem3: 82, sem4: 85, backlogs: 0 }
     ];
 
-    for (const student of students) {
-      // Compute aggregate (average of 4 sems)
-      const aggregate =
-        (student.sem1 + student.sem2 + student.sem3 + student.sem4) / 4;
+    try {
+      for (const student of students) {
+        // Compute aggregate (average of 4 sems). Guard against missing/NaN.
+        const s1 = Number(student.sem1) || 0;
+        const s2 = Number(student.sem2) || 0;
+        const s3 = Number(student.sem3) || 0;
+        const s4 = Number(student.sem4) || 0;
+        const aggregate = Number(((s1 + s2 + s3 + s4) / 4).toFixed(2));
 
-      // Eligible if aggregate ≥ 50 and no backlogs
-      const placementEligible = aggregate >= 50 && student.backlogs === 0;
+        // Eligible if aggregate >= 50 and no backlogs
+        const placementEligible = aggregate >= 50 && Number(student.backlogs) === 0;
 
-      // Default placement status
-      let placementStatus = "Not Placed";
+        // Default placement status
+        let placementStatus = "Not Placed";
 
+        // Diagnostic log — remove or keep as needed
+        console.log(`[5th-seed] ${student.usn} - aggregate: ${aggregate}, backlogs: ${student.backlogs}, eligible: ${placementEligible}`);
+
+        // Insert or update single row
+        await studentDB.exec`
+          INSERT INTO students (
+            name, usn, batch, tenth_percentage, puc_percentage,
+            sem1_percentage, sem2_percentage, sem3_percentage, sem4_percentage,
+            aggregate_percentage, active_backlogs, placement_eligible, placement_status
+          ) VALUES (
+            ${student.name}, ${student.usn}, '5th-sem', ${student.tenth}, ${student.puc},
+            ${s1}, ${s2}, ${s3}, ${s4},
+            ${aggregate}, ${student.backlogs}, ${placementEligible}, ${placementStatus}
+          )
+          ON CONFLICT (usn) DO UPDATE SET
+            name = EXCLUDED.name,
+            tenth_percentage = EXCLUDED.tenth_percentage,
+            puc_percentage = EXCLUDED.puc_percentage,
+            sem1_percentage = EXCLUDED.sem1_percentage,
+            sem2_percentage = EXCLUDED.sem2_percentage,
+            sem3_percentage = EXCLUDED.sem3_percentage,
+            sem4_percentage = EXCLUDED.sem4_percentage,
+            aggregate_percentage = EXCLUDED.aggregate_percentage,
+            active_backlogs = EXCLUDED.active_backlogs,
+            placement_eligible = EXCLUDED.placement_eligible,
+            placement_status = EXCLUDED.placement_status,
+            updated_at = CURRENT_TIMESTAMP
+        `;
+      }
+
+      // --- Guarantee correct flags for all existing 5th-sem rows ---
+      // 1) mark eligible where aggregate >= 50 and no backlogs
       await studentDB.exec`
-        INSERT INTO students (
-          name, usn, batch, tenth_percentage, puc_percentage,
-          sem1_percentage, sem2_percentage, sem3_percentage, sem4_percentage,
-          aggregate_percentage, active_backlogs, placement_eligible, placement_status
-        ) VALUES (
-          ${student.name}, ${student.usn}, '5th-sem', ${student.tenth}, ${student.puc},
-          ${student.sem1}, ${student.sem2}, ${student.sem3}, ${student.sem4},
-          ${aggregate}, ${student.backlogs}, ${placementEligible}, ${placementStatus}
-        )
-        ON CONFLICT (usn) DO UPDATE SET
-          name = EXCLUDED.name,
-          tenth_percentage = EXCLUDED.tenth_percentage,
-          puc_percentage = EXCLUDED.puc_percentage,
-          sem1_percentage = EXCLUDED.sem1_percentage,
-          sem2_percentage = EXCLUDED.sem2_percentage,
-          sem3_percentage = EXCLUDED.sem3_percentage,
-          sem4_percentage = EXCLUDED.sem4_percentage,
-          aggregate_percentage = EXCLUDED.aggregate_percentage,
-          active_backlogs = EXCLUDED.active_backlogs,
-          placement_eligible = EXCLUDED.placement_eligible,
-          placement_status = EXCLUDED.placement_status,
-          updated_at = CURRENT_TIMESTAMP
+        UPDATE students
+        SET placement_eligible = true, placement_status = COALESCE(placement_status, 'Not Placed'), updated_at = CURRENT_TIMESTAMP
+        WHERE batch = '5th-sem' AND aggregate_percentage >= 50 AND active_backlogs = 0
       `;
-    }
 
-    return { message: `Successfully seeded ${students.length} 5th semester students` };
+      // 2) mark not eligible where condition not met
+      await studentDB.exec`
+        UPDATE students
+        SET placement_eligible = false, updated_at = CURRENT_TIMESTAMP
+        WHERE batch = '5th-sem' AND NOT (aggregate_percentage >= 50 AND active_backlogs = 0)
+      `;
+
+      return { message: `Successfully seeded ${students.length} 5th semester students and updated eligibility` };
+    } catch (err) {
+      console.error('[seedFifthSemData] error:', err);
+      throw err; // return a non-200 so you see the error
+    }
   }
 );
