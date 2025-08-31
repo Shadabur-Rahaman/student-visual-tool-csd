@@ -95,14 +95,6 @@ function Navigation() {
               );
             })}
           </div>
-
-          {/* Additional Info */}
-          <div className={`hidden md:flex items-center space-x-2 text-sm ${
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          }`}>
-            <TrendingUp className="h-4 w-4" />
-            <span className="font-medium">Student Analytics Portal</span>
-          </div>
         </div>
       </div>
     </nav>
@@ -142,14 +134,56 @@ export default function App() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
+    
+    // Apply theme to document root for global CSS variables
     document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Set CSS custom properties for consistent theming
+    const root = document.documentElement;
+    if (savedTheme === 'dark') {
+      root.style.setProperty('--text-primary', '#ffffff');
+      root.style.setProperty('--text-secondary', '#e5e7eb');
+      root.style.setProperty('--text-muted', '#9ca3af');
+      root.style.setProperty('--bg-card', 'rgba(31, 41, 55, 0.9)');
+      root.style.setProperty('--bg-card-hover', 'rgba(55, 65, 81, 0.9)');
+      root.style.setProperty('--border-color', 'rgba(75, 85, 99, 0.5)');
+    } else {
+      root.style.setProperty('--text-primary', '#111827');
+      root.style.setProperty('--text-secondary', '#374151');
+      root.style.setProperty('--text-muted', '#6b7280');
+      root.style.setProperty('--bg-card', 'rgba(255, 255, 255, 0.9)');
+      root.style.setProperty('--bg-card-hover', 'rgba(249, 250, 251, 0.9)');
+      root.style.setProperty('--border-color', 'rgba(229, 231, 235, 0.5)');
+    }
   }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+    
+    // Apply theme changes
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    document.documentElement.setAttribute('data-theme', newTheme);
+    
+    // Update CSS custom properties
+    const root = document.documentElement;
+    if (newTheme === 'dark') {
+      root.style.setProperty('--text-primary', '#ffffff');
+      root.style.setProperty('--text-secondary', '#e5e7eb');
+      root.style.setProperty('--text-muted', '#9ca3af');
+      root.style.setProperty('--bg-card', 'rgba(31, 41, 55, 0.9)');
+      root.style.setProperty('--bg-card-hover', 'rgba(55, 65, 81, 0.9)');
+      root.style.setProperty('--border-color', 'rgba(75, 85, 99, 0.5)');
+    } else {
+      root.style.setProperty('--text-primary', '#111827');
+      root.style.setProperty('--text-secondary', '#374151');
+      root.style.setProperty('--text-muted', '#6b7280');
+      root.style.setProperty('--bg-card', 'rgba(255, 255, 255, 0.9)');
+      root.style.setProperty('--bg-card-hover', 'rgba(249, 250, 251, 0.9)');
+      root.style.setProperty('--border-color', 'rgba(229, 231, 235, 0.5)');
+    }
   };
 
   const themeValue = { theme, toggleTheme };
@@ -181,13 +215,95 @@ export default function App() {
             {/* Enhanced Navigation with integrated component */}
             <Navigation />
 
-            {/* Main Content with improved contrast */}
+            {/* Main Content with Global Theme Styling */}
             <main className="container mx-auto px-4 py-8 pb-20 relative z-20">
-              <div className={`backdrop-blur-sm rounded-3xl p-6 transition-all duration-500 shadow-xl border ${
-                theme === 'dark' 
-                  ? 'bg-gray-800/40 border-gray-700/40 shadow-black/20' 
-                  : 'bg-white/60 border-gray-200/50 shadow-gray-900/5'
-              }`}>
+              <div 
+                className={`backdrop-blur-sm rounded-3xl p-6 transition-all duration-500 shadow-xl border ${
+                  theme === 'dark' 
+                    ? 'bg-gray-800/60 border-gray-600/50 shadow-black/30' 
+                    : 'bg-white/60 border-gray-200/50 shadow-gray-900/5'
+                }`}
+                style={{
+                  // Global theme variables for child components
+                  color: theme === 'dark' ? '#ffffff' : '#111827'
+                }}
+              >
+                {/* Global Theme Styles */}
+                <style jsx global>{`
+                  /* Ensure all text is visible in both themes */
+                  [data-theme="dark"] .text-gray-900,
+                  [data-theme="dark"] .text-gray-800,
+                  [data-theme="dark"] .text-gray-700,
+                  [data-theme="dark"] .text-black {
+                    color: #ffffff !important;
+                  }
+                  
+                  [data-theme="dark"] .text-gray-600,
+                  [data-theme="dark"] .text-gray-500 {
+                    color: #e5e7eb !important;
+                  }
+                  
+                  [data-theme="dark"] .text-gray-400 {
+                    color: #9ca3af !important;
+                  }
+                  
+                  /* Card backgrounds in dark theme */
+                  [data-theme="dark"] .bg-white {
+                    background-color: rgba(31, 41, 55, 0.9) !important;
+                    border-color: rgba(75, 85, 99, 0.5) !important;
+                  }
+                  
+                  [data-theme="dark"] .bg-gray-50 {
+                    background-color: rgba(55, 65, 81, 0.8) !important;
+                  }
+                  
+                  /* Ensure card text is always visible */
+                  [data-theme="dark"] .card-content,
+                  [data-theme="dark"] .card-content *,
+                  [data-theme="dark"] [class*="text-"] {
+                    color: #ffffff !important;
+                  }
+                  
+                  /* Stats card specific fixes */
+                  [data-theme="dark"] .stats-card .text-2xl,
+                  [data-theme="dark"] .stats-card .text-xl,
+                  [data-theme="dark"] .stats-card .font-bold {
+                    color: #ffffff !important;
+                  }
+                  
+                  /* Table styling for dark theme */
+                  [data-theme="dark"] table,
+                  [data-theme="dark"] th,
+                  [data-theme="dark"] td {
+                    color: #ffffff !important;
+                    border-color: rgba(75, 85, 99, 0.5) !important;
+                  }
+                  
+                  [data-theme="dark"] .table-row:hover {
+                    background-color: rgba(55, 65, 81, 0.5) !important;
+                  }
+                  
+                  /* Override any inherited text colors */
+                  [data-theme="dark"] * {
+                    color: inherit;
+                  }
+                  
+                  [data-theme="dark"] h1,
+                  [data-theme="dark"] h2,
+                  [data-theme="dark"] h3,
+                  [data-theme="dark"] h4,
+                  [data-theme="dark"] h5,
+                  [data-theme="dark"] h6 {
+                    color: #ffffff !important;
+                  }
+                  
+                  [data-theme="dark"] p,
+                  [data-theme="dark"] span,
+                  [data-theme="dark"] div {
+                    color: #ffffff;
+                  }
+                `}</style>
+                
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/analytics" element={<Analytics />} />
@@ -196,7 +312,7 @@ export default function App() {
               </div>
             </main>
             
-            {/* Enhanced Professional Footer with better visibility */}
+            {/* Enhanced Professional Footer */}
             <footer className="fixed bottom-0 right-0 p-4 z-10">
               <div className={`backdrop-blur-md rounded-xl px-4 py-2 shadow-xl border transition-all duration-300 hover:scale-105 ${
                 theme === 'dark' 
