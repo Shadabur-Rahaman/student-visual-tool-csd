@@ -38,13 +38,16 @@ function Navigation() {
         <div className="flex items-center justify-between h-20">
           {/* Logo/Brand Section */}
           <Link to="/" className="flex items-center space-x-4">
-            <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 ${
-              theme === 'dark' 
-                ? 'bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600 text-white shadow-purple-500/30' 
-                : 'bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 text-white shadow-blue-500/30'
-            }`}>
-              🎓
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
+            <div className="relative w-12 h-12 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden bg-white/10 backdrop-blur-sm">
+              <img 
+                src="https://i.postimg.cc/5tKDhzcC/csd-logo.png" 
+                alt="CSD Logo" 
+                className="w-full h-full object-contain p-1"
+                style={{
+                  filter: theme === 'dark' ? 'brightness(1.1) contrast(1.1)' : 'none'
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl pointer-events-none"></div>
             </div>
             <div>
               <div className={`font-bold text-2xl bg-gradient-to-r bg-clip-text text-transparent leading-tight ${
@@ -57,7 +60,7 @@ function Navigation() {
               <div className={`text-sm font-semibold tracking-wide ${
                 theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
               }`}>
-                PES Institute of Technology & Management
+                BEC Institute of Technology & Management
               </div>
             </div>
           </Link>
@@ -157,7 +160,7 @@ function DeveloperCredit() {
           <div className={`text-sm font-medium ${
             theme === 'dark' ? 'text-slate-300' : 'text-gray-600'
           }`}>
-            Crafted by
+            Crafted with ❤️ by
           </div>
           <a
             href="https://www.linkedin.com/in/shadabur-rahaman"
