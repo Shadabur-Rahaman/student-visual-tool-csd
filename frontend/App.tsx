@@ -60,7 +60,7 @@ function Navigation() {
               <div className={`text-sm font-semibold tracking-wide ${
                 theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
               }`}>
-                BEC Institute of Technology & Management
+                PES Institute of Technology & Management
               </div>
             </div>
           </Link>
