@@ -181,78 +181,52 @@ function DeveloperCredit() {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState('dark'); // Default to dark theme
+  // Initialize with dark theme immediately
+  const [theme, setTheme] = useState(() => {
+    // Check for saved theme, default to dark
+    const savedTheme = typeof window !== 'undefined' ? sessionStorage.getItem('theme') : null;
+    return savedTheme || 'dark';
+  });
 
+  // Apply theme immediately on mount and whenever theme changes
   useEffect(() => {
-    // Always default to dark theme on first load
-    const savedTheme = sessionStorage.getItem('theme');
-    const initialTheme = savedTheme || 'dark'; // Default to dark if no saved preference
+    // Force dark theme styling immediately
+    const applyTheme = (currentTheme) => {
+      const root = document.documentElement;
+      
+      // Clear existing classes
+      root.classList.remove('light', 'dark');
+      root.classList.add(currentTheme);
+      root.setAttribute('data-theme', currentTheme);
+      
+      if (currentTheme === 'dark') {
+        root.style.setProperty('--text-primary', '#f8fafc');
+        root.style.setProperty('--text-secondary', '#e2e8f0');
+        root.style.setProperty('--text-muted', '#94a3b8');
+        root.style.setProperty('--bg-card', 'rgba(30, 41, 59, 0.95)');
+        root.style.setProperty('--bg-card-hover', 'rgba(51, 65, 85, 0.95)');
+        root.style.setProperty('--border-color', 'rgba(71, 85, 105, 0.6)');
+      } else {
+        root.style.setProperty('--text-primary', '#0f172a');
+        root.style.setProperty('--text-secondary', '#334155');
+        root.style.setProperty('--text-muted', '#64748b');
+        root.style.setProperty('--bg-card', 'rgba(255, 255, 255, 0.95)');
+        root.style.setProperty('--bg-card-hover', 'rgba(248, 250, 252, 0.95)');
+        root.style.setProperty('--border-color', 'rgba(226, 232, 240, 0.6)');
+      }
+      
+      // Save to sessionStorage
+      sessionStorage.setItem('theme', currentTheme);
+    };
     
-    setTheme(initialTheme);
+    // Apply the theme immediately
+    applyTheme(theme);
     
-    // Force dark theme classes and attributes
-    document.documentElement.classList.remove('light');
-    document.documentElement.classList.add('dark');
-    document.documentElement.setAttribute('data-theme', initialTheme);
-    
-    const root = document.documentElement;
-    if (initialTheme === 'dark') {
-      root.style.setProperty('--text-primary', '#f8fafc');
-      root.style.setProperty('--text-secondary', '#e2e8f0');
-      root.style.setProperty('--text-muted', '#94a3b8');
-      root.style.setProperty('--bg-card', 'rgba(30, 41, 59, 0.95)');
-      root.style.setProperty('--bg-card-hover', 'rgba(51, 65, 85, 0.95)');
-      root.style.setProperty('--border-color', 'rgba(71, 85, 105, 0.6)');
-    } else {
-      // Only apply light theme if explicitly saved as light
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      root.style.setProperty('--text-primary', '#0f172a');
-      root.style.setProperty('--text-secondary', '#334155');
-      root.style.setProperty('--text-muted', '#64748b');
-      root.style.setProperty('--bg-card', 'rgba(255, 255, 255, 0.95)');
-      root.style.setProperty('--bg-card-hover', 'rgba(248, 250, 252, 0.95)');
-      root.style.setProperty('--border-color', 'rgba(226, 232, 240, 0.6)');
-    }
-    
-    // Save the initial dark theme if no preference was saved
-    if (!savedTheme) {
-      sessionStorage.setItem('theme', 'dark');
-    }
-  }, []);
+  }, [theme]); // Re-run when theme changes
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    sessionStorage.setItem('theme', newTheme);
-    
-    // Apply theme changes with explicit class management
-    if (newTheme === 'dark') {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-    }
-    document.documentElement.setAttribute('data-theme', newTheme);
-    
-    // Update CSS custom properties
-    const root = document.documentElement;
-    if (newTheme === 'dark') {
-      root.style.setProperty('--text-primary', '#f8fafc');
-      root.style.setProperty('--text-secondary', '#e2e8f0');
-      root.style.setProperty('--text-muted', '#94a3b8');
-      root.style.setProperty('--bg-card', 'rgba(30, 41, 59, 0.95)');
-      root.style.setProperty('--bg-card-hover', 'rgba(51, 65, 85, 0.95)');
-      root.style.setProperty('--border-color', 'rgba(71, 85, 105, 0.6)');
-    } else {
-      root.style.setProperty('--text-primary', '#0f172a');
-      root.style.setProperty('--text-secondary', '#334155');
-      root.style.setProperty('--text-muted', '#64748b');
-      root.style.setProperty('--bg-card', 'rgba(255, 255, 255, 0.95)');
-      root.style.setProperty('--bg-card-hover', 'rgba(248, 250, 252, 0.95)');
-      root.style.setProperty('--border-color', 'rgba(226, 232, 240, 0.6)');
-    }
+    setTheme(newTheme); // This will trigger the useEffect to apply the theme
   };
 
   const themeValue = { theme, toggleTheme };
