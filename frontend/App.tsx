@@ -184,14 +184,19 @@ export default function App() {
   const [theme, setTheme] = useState('dark'); // Default to dark theme
 
   useEffect(() => {
-    const savedTheme = sessionStorage.getItem('theme') || 'dark'; // Default to dark if no saved preference
-    setTheme(savedTheme);
+    // Always default to dark theme on first load
+    const savedTheme = sessionStorage.getItem('theme');
+    const initialTheme = savedTheme || 'dark'; // Default to dark if no saved preference
     
-    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    setTheme(initialTheme);
+    
+    // Force dark theme classes and attributes
+    document.documentElement.classList.remove('light');
+    document.documentElement.classList.add('dark');
+    document.documentElement.setAttribute('data-theme', initialTheme);
     
     const root = document.documentElement;
-    if (savedTheme === 'dark') {
+    if (initialTheme === 'dark') {
       root.style.setProperty('--text-primary', '#f8fafc');
       root.style.setProperty('--text-secondary', '#e2e8f0');
       root.style.setProperty('--text-muted', '#94a3b8');
@@ -199,6 +204,9 @@ export default function App() {
       root.style.setProperty('--bg-card-hover', 'rgba(51, 65, 85, 0.95)');
       root.style.setProperty('--border-color', 'rgba(71, 85, 105, 0.6)');
     } else {
+      // Only apply light theme if explicitly saved as light
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
       root.style.setProperty('--text-primary', '#0f172a');
       root.style.setProperty('--text-secondary', '#334155');
       root.style.setProperty('--text-muted', '#64748b');
@@ -206,16 +214,29 @@ export default function App() {
       root.style.setProperty('--bg-card-hover', 'rgba(248, 250, 252, 0.95)');
       root.style.setProperty('--border-color', 'rgba(226, 232, 240, 0.6)');
     }
+    
+    // Save the initial dark theme if no preference was saved
+    if (!savedTheme) {
+      sessionStorage.setItem('theme', 'dark');
+    }
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark'; // Switch from dark to light, then back to dark
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     sessionStorage.setItem('theme', newTheme);
     
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    // Apply theme changes with explicit class management
+    if (newTheme === 'dark') {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    }
     document.documentElement.setAttribute('data-theme', newTheme);
     
+    // Update CSS custom properties
     const root = document.documentElement;
     if (newTheme === 'dark') {
       root.style.setProperty('--text-primary', '#f8fafc');
