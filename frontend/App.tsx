@@ -157,7 +157,7 @@ function DeveloperCredit() {
           <div className={`text-sm font-medium ${
             theme === 'dark' ? 'text-slate-300' : 'text-gray-600'
           }`}>
-            Crafted with ❤️ by
+            Crafted by
           </div>
           <a
             href="https://www.linkedin.com/in/shadabur-rahaman"
