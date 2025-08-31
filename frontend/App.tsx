@@ -60,7 +60,7 @@ function Navigation() {
               <div className={`text-sm font-semibold tracking-wide ${
                 theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
               }`}>
-                PES Institute of Technology & Management
+                BEC Institute of Technology & Management
               </div>
             </div>
           </Link>
@@ -116,15 +116,15 @@ function ThemeToggle() {
       }`}
     >
       <div className="flex items-center space-x-2">
-        {theme === 'light' ? (
-          <>
-            <Moon className="h-5 w-5" />
-            <span className="font-medium">Dark</span>
-          </>
-        ) : (
+        {theme === 'dark' ? (
           <>
             <Sun className="h-5 w-5" />
             <span className="font-medium">Light</span>
+          </>
+        ) : (
+          <>
+            <Moon className="h-5 w-5" />
+            <span className="font-medium">Dark</span>
           </>
         )}
       </div>
@@ -160,7 +160,7 @@ function DeveloperCredit() {
           <div className={`text-sm font-medium ${
             theme === 'dark' ? 'text-slate-300' : 'text-gray-600'
           }`}>
-            Crafted by
+            Crafted with ❤️ by
           </div>
           <a
             href="https://www.linkedin.com/in/shadabur-rahaman"
@@ -181,10 +181,10 @@ function DeveloperCredit() {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark'); // Default to dark theme
 
   useEffect(() => {
-    const savedTheme = sessionStorage.getItem('theme') || 'light';
+    const savedTheme = sessionStorage.getItem('theme') || 'dark'; // Default to dark if no saved preference
     setTheme(savedTheme);
     
     document.documentElement.classList.toggle('dark', savedTheme === 'dark');
@@ -209,7 +209,7 @@ export default function App() {
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+    const newTheme = theme === 'dark' ? 'light' : 'dark'; // Switch from dark to light, then back to dark
     setTheme(newTheme);
     sessionStorage.setItem('theme', newTheme);
     
