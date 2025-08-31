@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 
 // Theme Context
 const ThemeContext = createContext({
-  theme: 'light',
+  theme: 'dark',
   toggleTheme: () => {}
 });
 
@@ -181,16 +181,11 @@ function DeveloperCredit() {
 }
 
 export default function App() {
-  // Initialize with dark theme immediately
-  const [theme, setTheme] = useState(() => {
-    // Check for saved theme, default to dark
-    const savedTheme = typeof window !== 'undefined' ? sessionStorage.getItem('theme') : null;
-    return savedTheme || 'dark';
-  });
+  // Force dark theme as default - always start with dark mode
+  const [theme, setTheme] = useState('dark');
 
-  // Apply theme immediately on mount and whenever theme changes
+  // Apply dark theme immediately on mount and sync with sessionStorage
   useEffect(() => {
-    // Force dark theme styling immediately
     const applyTheme = (currentTheme) => {
       const root = document.documentElement;
       
@@ -215,18 +210,18 @@ export default function App() {
         root.style.setProperty('--border-color', 'rgba(226, 232, 240, 0.6)');
       }
       
-      // Save to sessionStorage
+      // Save to sessionStorage for the current session only
       sessionStorage.setItem('theme', currentTheme);
     };
     
-    // Apply the theme immediately
+    // Apply dark theme immediately on first mount
     applyTheme(theme);
     
-  }, [theme]); // Re-run when theme changes
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme); // This will trigger the useEffect to apply the theme
+    setTheme(newTheme);
   };
 
   const themeValue = { theme, toggleTheme };
